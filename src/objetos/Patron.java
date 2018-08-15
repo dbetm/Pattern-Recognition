@@ -8,30 +8,41 @@ public class Patron {
     /** Los elementos que tiene un patrón en el contexto de clasificación 
     supervisada */
     private double[] caracteristicas;
-    // Para etiquetar el objeto de acuerdo a la clase a la que pertenece
-    private String clase;
+    // Para etiquetar el objeto de acuerdo a la claseOriginal a la que pertenece
+    private String claseOriginal;
+    private String claseResultante;
     
     // Inicialización por defecto
     public Patron(int dim) {
         this.caracteristicas = new double[dim];
-        this.clase = "desconocida";
+        this.claseOriginal = "desconocida";
+        this.claseResultante = "desconocida";
     }
     
     public Patron(double[] caracteristicas, String clase) {
         this.caracteristicas = caracteristicas;
-        this.clase = clase;
+        this.claseOriginal = clase;
+        this.claseResultante = "desconocida";
     }
 
     public double[] getCaracteristicas() {
         return caracteristicas;
     }
 
-    public String getClase() {
-        return clase;
+    public String getClaseOriginal() {
+        return claseOriginal;
     }
 
-    public void setClase(String clase) {
-        this.clase = clase;
+    public void setClaseOriginal(String claseOriginal) {
+        this.claseOriginal = claseOriginal;
+    }
+
+    public String getClaseResultante() {
+        return claseResultante;
+    }
+
+    public void setClaseResultante(String claseResultante) {
+        this.claseResultante = claseResultante;
     }
     
 }
