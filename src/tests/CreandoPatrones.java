@@ -1,13 +1,14 @@
-package objetos;
+package tests;
 
 import java.util.ArrayList;
+import objetos.Patron;
 import tools.Tokenizador;
 
 /**
  *
  * @author david
  */
-public class Main {
+public class CreandoPatrones {
     public static void main(String[] args) {
         // Los plumones tienen peso, ancho y alto
         Patron plumon = new Patron(3);
