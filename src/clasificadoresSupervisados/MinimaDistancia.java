@@ -3,6 +3,7 @@ package clasificadoresSupervisados;
 import java.util.ArrayList;
 import objetos.Patron;
 import objetos.PatronRepresentativo;
+import tools.HerramientasClasificadores;
 
 /**
  *
@@ -30,36 +31,60 @@ public class MinimaDistancia implements clasificadorSupervisado {
             // buscar en los representativos
             buscaYAcumula(patron);
         }
+        // Calcular la media
+        for (PatronRepresentativo pr: this.representativos) {
+            // Recorrremos por características
+            for (int i = 0; i < pr.getCaracteristicas().length; i++) {
+                pr.getCaracteristicas()[i] /= pr.getNumPatrones();
+            }
+        }
     }
 
     @Override
     public void clasifica(Patron patron) {
+        // Hipótesis
+        double distanciaMenor = HerramientasClasificadores
+            .calcularDistanciaEuclidiana(patron, this.representativos.get(0));
+        System.out.println(distanciaMenor);
+        patron.setClaseResultante(this.representativos.get(0).getClaseOriginal());
+        for (int i = 1; i < this.representativos.size(); i++) {
+            double distancia = HerramientasClasificadores.calcularDistanciaEuclidiana(patron,
+                this.representativos.get(i));
+            System.out.println(distancia);
+            if(distancia < distanciaMenor) {
+                distanciaMenor = distancia;
+                patron.setClaseResultante(this.representativos.get(i).getClaseOriginal());
+            }
+        }
     }
     
     private void buscaYAcumula(Patron patron) {
-        // buscar en la coleccion de represantes
+        int m = -1;
+        // Buscar en la colección de representantes
         for (int i = 0; i < this.representativos.size(); i++) {
-            //verificamos que exista 
-            if (patron.getClaseOriginal().equals(
+            // Verificamos si ya existe
+            if(patron.getClaseOriginal().equals(
                 this.representativos.get(i).getClaseOriginal())) {
-                // contamos
-                this.representativos.get(i)
-                    .setNumPatrones(this.representativos.get(i).getNumPatrones()+1);
-                // acumulamos
-                for(int j=0; j<this.representativos.get(i).getCaracteristicas().length; j++) {
-                    this.representativos
-                        .get(i).getCaracteristicas()[j]+=patron.getCaracteristicas()[j];
+                // Contamos
+                this.representativos.get(i).setNumPatrones(
+                    this.representativos.get(i).getNumPatrones() + 1);
+                // Acumulamos
+                for (int j = 0; j < this.representativos.get(i)
+                    .getCaracteristicas().length; j++) {
+                    this.representativos.get(i).getCaracteristicas()[j] += 
+                        patron.getCaracteristicas()[j];
                 }
-                break;
-            }
-            else {
-                // agrega 
-                this.representativos.add(new PatronRepresentativo(
-                    patron.getCaracteristicas(), patron.getClaseOriginal()));
+                m = i;
                 break;
             }
         }
-       // TODO: ESTA MAL DEL ACUMULADO 
+        if(m == -1) {
+            // agrega
+            this.representativos.add(new PatronRepresentativo(
+                    patron.getCaracteristicas(),
+                    patron.getClaseOriginal()
+            ));
+        }
     }
     
 }
