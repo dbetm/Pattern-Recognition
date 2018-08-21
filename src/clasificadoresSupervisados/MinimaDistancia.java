@@ -45,12 +45,12 @@ public class MinimaDistancia implements clasificadorSupervisado {
         // Hipótesis
         double distanciaMenor = HerramientasClasificadores
             .calcularDistanciaEuclidiana(patron, this.representativos.get(0));
-        System.out.println(distanciaMenor);
+        //System.out.println(distanciaMenor);
         patron.setClaseResultante(this.representativos.get(0).getClaseOriginal());
         for (int i = 1; i < this.representativos.size(); i++) {
             double distancia = HerramientasClasificadores.calcularDistanciaEuclidiana(patron,
                 this.representativos.get(i));
-            System.out.println(distancia);
+            //System.out.println(distancia);
             if(distancia < distanciaMenor) {
                 distanciaMenor = distancia;
                 patron.setClaseResultante(this.representativos.get(i).getClaseOriginal());
