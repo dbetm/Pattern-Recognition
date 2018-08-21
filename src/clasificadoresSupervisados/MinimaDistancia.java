@@ -11,10 +11,12 @@ import tools.HerramientasClasificadores;
  */
 public class MinimaDistancia implements clasificadorSupervisado {
     private ArrayList<PatronRepresentativo> representativos;
+    private double eficacia;
     
     public MinimaDistancia() {
         // Se instancia la colección de patrones representativos
         this.representativos = new ArrayList<>();
+        this.eficacia = 0;
     }
     
     // Como es un clasificador supervisado que debe implementar los métodos 
@@ -56,6 +58,23 @@ public class MinimaDistancia implements clasificadorSupervisado {
                 patron.setClaseResultante(this.representativos.get(i).getClaseOriginal());
             }
         }
+    }
+    
+    public void clasificaConjunto(ArrayList<Patron> instancias) {
+        // Recorremos la colección a clasificación
+        int total = instancias.size();
+        // Contador de clasificaciones correctos
+        int aux = 0;
+        for (Patron conejillo : instancias) {
+            clasifica(conejillo);
+            if(conejillo.getClaseResultante().equals(conejillo.getClaseOriginal()))
+                aux++;    
+        }
+        this.eficacia = (aux * 100) / total;
+    }
+
+    public double getEficacia() {
+        return eficacia;
     }
     
     private void buscaYAcumula(Patron patron) {

@@ -14,18 +14,14 @@ import tools.Tokenizador;
 public class TestClasificadorDistanciaMin {
     public static void main(String[] args) {   
         Tokenizador.leerDatos();
-        ArrayList<Patron> aux = Tokenizador.instancias;
-        double res = HerramientasClasificadores.calcularDistanciaEuclidiana(
-            Tokenizador.instancias.get(0), Tokenizador.instancias.get(1));
         // Instanciamos el clasificador supervisado de distancia mínima
         MinimaDistancia md = new MinimaDistancia();
         md.entrena(Tokenizador.instancias);
         //Patron a = new Patron(new double[]{4.9, 3.0, 1.4, 0.2}, "desconocida");
         //md.clasifica(a);
         //System.out.println(res);
-        
-        System.out.println(ClassificationChecker.calcEficaciaDistMin(md, aux));
-    } 
-    
-    
+        md.clasificaConjunto(Tokenizador.instancias);
+        //System.out.println(ClassificationChecker.calcEficaciaDistMin(md, aux));
+        System.out.println("Eficacia: " + md.getEficacia());
+    }
 }
