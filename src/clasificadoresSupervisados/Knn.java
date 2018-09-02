@@ -18,7 +18,7 @@ import tools.HerramientasClasificadores;
 public class Knn implements clasificadorSupervisado {
     private ArrayList<Patron> instancias;
     private double eficacia;
-    public static final int K = 3;
+    public static final int K = 2;
 
     @Override
     public void entrena(ArrayList<Patron> instancias) {
@@ -39,8 +39,10 @@ public class Knn implements clasificadorSupervisado {
         for (Patron instancia : instancias) {
             dist = new Double(HerramientasClasificadores
                 .calcularDistanciaEuclidiana(instancia, patron));
-            vecino = new VecinoKnn(dist, instancia.getClaseOriginal());
-            distancias.add(vecino);
+            if(dist != 0) {
+                vecino = new VecinoKnn(dist, instancia.getClaseOriginal());
+                distancias.add(vecino);
+            }
         }
         // Se ordenan por distancia, de manera ascendente
         Collections.sort(distancias, new Comparator<VecinoKnn>() {
@@ -77,7 +79,7 @@ public class Knn implements clasificadorSupervisado {
            String aproachClass = "desconocida";
            Integer value;
            String key;
-           
+            System.out.println("Hola");
             for (Entry<String, Integer> entry : tablaHash.entrySet()) {
                 value = entry.getValue();
                 if(value > max)  {
