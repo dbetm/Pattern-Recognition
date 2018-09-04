@@ -38,4 +38,14 @@ public class GeneradorDeInstancias {
         }
         return aux;
     }
+
+    
+    public static void main(String[] args) {   
+        Tokenizador.leerDatos();
+        ArrayList<Patron> aux = GeneradorDeInstancias
+            .genInstanciasPorCaracteristicas(new byte[]{0,0,0,0,0,0,0,0,0,1,1,1,1});
+        
+        System.out.println("");
+    }
+    
 }
