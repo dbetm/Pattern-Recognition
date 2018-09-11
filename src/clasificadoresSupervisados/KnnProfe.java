@@ -1,12 +1,6 @@
 package clasificadoresSupervisados;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 import objetos.Patron;
 import objetos.VecinoKnn;
 import tools.GeneradorDeInstancias;
@@ -28,7 +22,6 @@ public class KnnProfe implements clasificadorSupervisado {
         this.K = K;
         this.eficacia = 0;
         this.clases = new ArrayList<>();
-        this.instancias = new ArrayList<>();
         this.vecinos = new ArrayList<>();
     }
     
@@ -42,34 +35,37 @@ public class KnnProfe implements clasificadorSupervisado {
                 this.clases.add(instancia.getClaseOriginal());
             }
         }
-        System.out.println("");
     }
     
     @Override
     public void clasifica(Patron patron) {
+        this.vecinos = new ArrayList<>();
         // Calcular todas las distancias
         for (Patron instancia : this.instancias) {
             String clase = instancia.getClaseOriginal();
             double distancia = 
-                    HerramientasClasificadores.calcularDistanciaEuclidiana(patron, instancia);
+                HerramientasClasificadores.calcularDistanciaEuclidiana(patron, instancia);
+            // Para no considerar el mismo patrón
             if(distancia != 0) {
                 this.vecinos.add(new VecinoKnn(distancia, clase));
             }
         }
-        // Ordenar las distancias
-        HerramientasClasificadores.ordenar(vecinos);
+        // Ordenar las distancias de manera ascendente
+        HerramientasClasificadores.ordenar(this.vecinos);
         String resultado = verificarKVecinos();
+        patron.setClaseResultante(resultado);
     }
     
     public void clasificaConjunto(ArrayList<Patron> instancias) {
-        // Recorremos la colección a clasificación
+        // Recorremos la colección a clasificar
         int total = instancias.size();
         // Contador de clasificaciones correctos
         int aux = 0;
         for (Patron conejillo : instancias) {
             clasifica(conejillo);
-            if(conejillo.getClaseResultante().equals(conejillo.getClaseOriginal()))
-                aux++;    
+            if(conejillo.getClaseResultante().equals(conejillo.getClaseOriginal())) {
+                aux++;
+            }
         }
         this.eficacia = (aux * 100) / total;
     }
@@ -82,30 +78,21 @@ public class KnnProfe implements clasificadorSupervisado {
     private String verificarKVecinos() {
         int contadores[] = new int[this.clases.size()];
         int i = 0;
-        int max = 0;
         for (VecinoKnn aux : this.vecinos) {
             String clase = aux.getClasePerteneciente();
             i = this.clases.indexOf(clase);
             contadores[i]++;
-            if(contadores[i] == K) {
-                break;
+            if(contadores[i] == this.K) {
+                return this.clases.get(i);
             }
         }
-        if(i == K) {
-            return this.clases.get(i);
-        }
-        else {
-            // Para este caso se retorna la clase con mayor número de vecinos más
-            // cercano
-            for (int ii = 0; ii < contadores.length; ii++) {
-                if(contadores[ii] > contadores[max]) max = ii;
-            }
-        }
-        return this.clases.get(max);
+        return "Desconocida";
     }
     
     public static void main(String[] args) {   
         Tokenizador.leerDatos();
+        ArrayList<Patron> aux = GeneradorDeInstancias
+                .genInstanciasPorCaracteristicas(new byte[]{1,1,1,1});
         // Instanciamos el clasificador supervisado knn
         KnnProfe knn = new KnnProfe(3);
         knn.entrena(Tokenizador.instancias);

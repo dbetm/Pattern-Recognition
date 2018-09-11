@@ -3,7 +3,6 @@ package clasificadoresSupervisados;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -19,12 +18,16 @@ import tools.Tokenizador;
 public class Knn implements clasificadorSupervisado {
     private ArrayList<Patron> instancias;
     private double eficacia;
-    public static final int K = 2;
+    private int K;
+    
+    public Knn(int K) {
+        this.K = K;
+        this.eficacia = 0;
+    }
 
     @Override
     public void entrena(ArrayList<Patron> instancias) {
         this.instancias = instancias;
-        this.eficacia = 0;
     }
     
     @Override
@@ -113,7 +116,7 @@ public class Knn implements clasificadorSupervisado {
     public static void main(String[] args) {   
         Tokenizador.leerDatos();
         // Instanciamos el clasificador supervisado knn
-        Knn knn = new Knn();
+        Knn knn = new Knn(3);
         knn.entrena(Tokenizador.instancias);
         //Patron a = new Patron(new double[]{6.7, 3, 5.2, 2.3}, "desconocida");
         //knn.clasifica(a);

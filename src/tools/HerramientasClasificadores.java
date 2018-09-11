@@ -17,7 +17,7 @@ public class HerramientasClasificadores {
     }
     
     public static void ordenar(ArrayList<VecinoKnn> vecinos) {
-        VecinoKnn temp;
+        VecinoKnn temp = null;
         for (int i = 1; i < vecinos.size(); i++) {
             for (int j = 0; j < vecinos.size() - i; j++) {
                 if(vecinos.get(j).getDistancia() > 
