@@ -8,12 +8,13 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import objetos.Patron;
 import objetos.VecinoKnn;
+import tools.GeneradorDeInstancias;
 import tools.HerramientasClasificadores;
 import tools.Tokenizador;
 
 /**
  *
- * @author david
+ * @author David Betancourt Montellano
  */
 public class Knn implements clasificadorSupervisado {
     private ArrayList<Patron> instancias;
@@ -24,11 +25,24 @@ public class Knn implements clasificadorSupervisado {
         this.K = K;
         this.eficacia = 0;
     }
-
+    
+    // #ENTRENAMIENTO
+    /*
+        1) Considerar las instancias de entrenamiento
+    */
     @Override
     public void entrena(ArrayList<Patron> instancias) {
         this.instancias = instancias;
     }
+    
+    // #CLASIFICACIÓN
+    /*
+        1) Obtener el patrón P a clasificar.
+        2) Calcular las distancias Euclidianas , entre el patrón P y el conjunto
+        de patrones de entrenamiento.
+        3) Ordenar de forma ascendente las distancias obtenidas en el paso 2.
+        4) Verficar la clase que cumpla primeramente con los k-vecinos.
+    */
     
     @Override
     public void clasifica(Patron patron) {
@@ -37,12 +51,15 @@ public class Knn implements clasificadorSupervisado {
         ArrayList<VecinoKnn> distancias = new ArrayList<>();
         VecinoKnn vecino;
         Double dist;
+        // Arreglo, para clave-valor => clase-distancia
         Map<String, Integer> tablaHash = new TreeMap<String, Integer>();
         boolean fueClasificada = false;
         
         for (Patron instancia : instancias) {
             dist = new Double(HerramientasClasificadores
                 .calcularDistanciaEuclidiana(instancia, patron));
+            // Se valida para que no se consideré a si mismo, ya que las 
+            // instancias de entrenamiento son las mismas que las de clasificación.
             if(dist != 0) {
                 vecino = new VecinoKnn(dist, instancia.getClaseOriginal());
                 distancias.add(vecino);
@@ -60,6 +77,7 @@ public class Knn implements clasificadorSupervisado {
         // Cuando el número de incidencias de cierta clase sea igual a k, entonces
         // al patrón se le seteará la clase resultante
         for (VecinoKnn distancia : distancias) {
+            // Se utiliza una tabla hash para no repetir las clases
             String claseClave = distancia.getClasePerteneciente();
             Integer val;
             if(tablaHash.containsKey(claseClave)) {
@@ -79,11 +97,10 @@ public class Knn implements clasificadorSupervisado {
         }
         // Si no se clasificó, agregamos la que más se repite
         if(!fueClasificada) {
-           Integer max = 0;
-           String aproachClass = "desconocida";
-           Integer value;
-           String key;
-            System.out.println("Hola");
+            Integer max = 0;
+            String aproachClass = "desconocida";
+            Integer value;
+            String key;
             for (Entry<String, Integer> entry : tablaHash.entrySet()) {
                 value = entry.getValue();
                 if(value > max)  {
@@ -102,8 +119,9 @@ public class Knn implements clasificadorSupervisado {
         int aux = 0;
         for (Patron conejillo : instancias) {
             clasifica(conejillo);
-            if(conejillo.getClaseResultante().equals(conejillo.getClaseOriginal()))
-                aux++;    
+            if(conejillo.getClaseResultante().equals(conejillo.getClaseOriginal())) {
+                aux++;
+            }
         }
         this.eficacia = (aux * 100) / total;
     }
@@ -116,14 +134,17 @@ public class Knn implements clasificadorSupervisado {
     public static void main(String[] args) {   
         Tokenizador.leerDatos();
         // Instanciamos el clasificador supervisado knn
-        Knn knn = new Knn(3);
-        knn.entrena(Tokenizador.instancias);
-        //Patron a = new Patron(new double[]{6.7, 3, 5.2, 2.3}, "desconocida");
-        //knn.clasifica(a);
-        //System.out.println(a.getClaseOriginal() + " " + a.getClaseResultante());
-        
-        knn.clasificaConjunto(Tokenizador.instancias);
-        //System.out.println(ClassificationChecker.calcEficaciaDistMin(md, aux));
+        Knn knn = new Knn(1);
+        // Se hace la seleccion de características
+        ArrayList<Patron> aux = GeneradorDeInstancias
+            .genInstanciasPorCaracteristicas(new byte[]
+            {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0}
+        );
+        // Se entrena el clasificador
+        knn.entrena(aux);
+        // Se clasifica con el mismo conjunto de entrenamiento
+        knn.clasificaConjunto(aux);
+        // Se muestra la eficacia resultante
         System.out.println("Eficacia: " + knn.getEficacia());
     }
 }

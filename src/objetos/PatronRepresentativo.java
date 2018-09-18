@@ -4,7 +4,7 @@ package objetos;
  * @author david
  */
 public class PatronRepresentativo extends Patron {
-    // el número de patrones que representa el objeto
+    // Número de patrones que representan al objeto
     private int numPatrones;
     
     public PatronRepresentativo(int dim) {
