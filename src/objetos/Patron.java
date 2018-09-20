@@ -43,5 +43,9 @@ public class Patron {
     public void setClaseResultante(String claseResultante) {
         this.claseResultante = claseResultante;
     }
+
+    public void setCaracteristicas(double[] caracteristicas) {
+        this.caracteristicas = caracteristicas;
+    }
     
 }
