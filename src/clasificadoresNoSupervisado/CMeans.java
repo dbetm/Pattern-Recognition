@@ -3,7 +3,9 @@ package clasificadoresNoSupervisado;
 import java.util.ArrayList;
 import java.util.Random;
 import objetos.Patron;
+import tools.Grafica;
 import tools.HerramientasClasificadores;
+import tools.Punto;
 import tools.Tokenizador;
 
 /**
@@ -24,7 +26,7 @@ public class CMeans {
     int[] contadores;
     // Como un criterio para detener las iteraciones, si no se cambiar su valor
     // entonces el criterio es por verificación de centroides (convergen).
-    int iteraciones = -1;
+    int iteraciones;
     
     // ### CONSTRUCTORES ###
     // Se le pasa el conjunto de instancias, el número de cluster a generar 
@@ -33,14 +35,6 @@ public class CMeans {
         this.instancias = instancias;
         this.c = c;
         this.iteraciones = iteraciones;
-        this.centroides = new ArrayList<>();
-    }
-    
-    // Para el criterio cuando se detienen las iteraciones por convergencia de
-    // los centroides
-    public CMeans(ArrayList<Patron> instancias, int c) {
-        this.instancias = instancias;
-        this.c = c;
         this.centroides = new ArrayList<>();
     }
     
@@ -62,7 +56,7 @@ public class CMeans {
             // forma aleatoria y asignando una clase 'Centroide #'.
             centroides[i] = new Patron(
                 this.instancias.get(pos).getCaracteristicas().clone(), 
-                "Centroide "+i);
+                "Centroide"+i);
         }
         
         // Se agregan a la colección de centroides los centroides inciciales
@@ -76,13 +70,12 @@ public class CMeans {
         
         // Se declara un contador por si acaso el criterio son las iteraciones
         int contador = 0;
-        boolean bandera; // para determinar cuando se detiene el ciclo
         do {
             // Es necesario recalcular los centroides
             // Y es necesario acumular
-            Patron[] centroidesNuevos = new Patron[c];
+            Patron[] centroidesNuevos = new Patron[this.c];
             // Nuevo arreglo de contadores
-            this.contadores = new int[c];
+            this.contadores = new int[this.c];
             // Se incializan nuevo grupo de centroides
             inicializarNuevosCentroides(centroidesNuevos);
           
@@ -110,15 +103,8 @@ public class CMeans {
             // Se vuelven a etiquetar las instancias
                 // se obtiene el último grupo de centroides generados
             etiquetar(this.centroides.get(this.centroides.size() - 1));
-            
-            // según el criterio para detener las iteraciones, se obtiene una bandera
-            if(iteraciones == -1) bandera = !verificarCentroides();
-            else {
-                bandera = contador < iteraciones;
-                System.out.println("Contador: " + contador++);
-            }
-        } while(bandera);
-        System.out.println("");
+            System.out.println(contador++);
+        } while(!verificarCentroides() && contador < iteraciones);
     }
     
     private void etiquetar(Patron[] centroides) {
@@ -130,7 +116,7 @@ public class CMeans {
             // Hipótesis, la distancia más pequeña la guarda con el primer centroide
             menor = HerramientasClasificadores
                 .calcularDistanciaEuclidiana(patron, centroides[0]);
-            patron.setClaseResultante(centroides[0].getClaseOriginal());
+            patron.setClaseOriginal(centroides[0].getClaseOriginal());
             /* Ahora se comprueba si las distancias del patrón respecto 
             a los centroides no son menores a la de la hipótesis, si es así
             entonces se actualiza la distancia menor, y se re-etiqueta el patrón
@@ -141,8 +127,10 @@ public class CMeans {
                     .calcularDistanciaEuclidiana(patron, centroides[i]);
                 // Si la distancia calculada es menor a la "menor" actual,
                 // entonces se actualiza su valor
-                if(distancia < menor) 
-                    patron.setClaseResultante(centroides[i].getClaseOriginal());
+                if(distancia < menor) {
+                    menor = distancia;
+                    patron.setClaseOriginal(centroides[i].getClaseOriginal());
+                } 
             }
         }
     }
@@ -183,7 +171,6 @@ public class CMeans {
     }
     
     private boolean verificarCentroides() {
-        System.out.println("Voy a comprobar");
         // Verificar si los centroides nuevos son iguales a los anteriores
         int numGruposCentroides = this.centroides.size();
         // Obtenemos el último grupo
@@ -198,11 +185,37 @@ public class CMeans {
         System.out.println("¡Convergen los centroides!");
         return true;
     }
+
+    public int getC() {
+        return c;
+    }
+
+    public ArrayList<Patron[]> getCentroides() {
+        return centroides;
+    }
+   
     
     public static void main(String []args) {
         Tokenizador.leerDatos();
-        CMeans cm = new CMeans(Tokenizador.instancias, 3, 500);
+        CMeans cm = new CMeans(Tokenizador.instancias, 3, 900);
         cm.clasifica();
+        Grafica grafica = new Grafica("Clasificación", "x1", "x2");
+        
+        Patron[] centroides = cm.getCentroides().get(0);
+        for (int i = 0; i < centroides.length; i++) {
+            grafica.agregarSerie(centroides[i].getClaseOriginal());
+        }
+        
+        Punto punto;
+        for (Patron patron : Tokenizador.instancias) {
+            // Se genera un punto con las dos características del patrón
+            punto = new Punto(patron.getCaracteristicas()[0], 
+                patron.getCaracteristicas()[1]);
+            grafica.agregarPunto(patron.getClaseOriginal(), punto);
+        }
+        
+        // Se crea la gráfica con los puntos
+        grafica.crearGraficaPuntos();
     }
     
 }
