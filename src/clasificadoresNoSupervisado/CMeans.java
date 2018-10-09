@@ -38,13 +38,20 @@ public class CMeans {
         this.centroides = new ArrayList<>();
     }
     
+    public CMeans(ArrayList<Patron> instancias, int c) {
+        this.instancias = instancias;
+        this.c = c;
+        this.iteraciones = 500;
+        this.centroides = new ArrayList<>();
+    }
+    
     // ### MÉTODOS ###
     public void clasifica() {
         // Se generan, de forma aleatoria, los centroides iniciales, se declara r
         Random r;
         // Conjunto de patrones para los centroides, deben ser c patrones 
         // "representativos". 
-        Patron[] centroides = new Patron[this.c];
+        Patron[] centroidesIniciales = new Patron[this.c];
         // Se eligen al azar los primeros c centroides
         for(int i = 0; i < this.c; i++) {
             /* Se obtiene de forma aleatoria, con distinta semilla, la posición
@@ -54,16 +61,24 @@ public class CMeans {
             int pos = r.nextInt(this.instancias.size());
             // Se guardan los centroides, clonando según la posición obtenida de
             // forma aleatoria y asignando una clase 'Centroide #'.
-            centroides[i] = new Patron(
+            centroidesIniciales[i] = new Patron(
                 this.instancias.get(pos).getCaracteristicas().clone(), 
                 "Centroide"+i);
         }
         
         // Se agregan a la colección de centroides los centroides inciciales
-        this.centroides.add(centroides);
-        
+        this.centroides.add(centroidesIniciales);
+        calcularClusters();
+    }
+    
+    public void clasifica(Patron[] centroidesIniciales) {
+        this.centroides.add(centroidesIniciales);
+        calcularClusters();
+    }
+    
+    private void calcularClusters() {
         // Etiquetar por primera ocasión (clasificar por primera ocasión)
-        etiquetar(centroides);
+        etiquetar(this.centroides.get(0));
         
         // Ahora inicia el proceso iterativo, para modificar y/o ajustar 
         // los centroides
@@ -197,9 +212,9 @@ public class CMeans {
     
     public static void main(String []args) {
         Tokenizador.leerDatos();
-        CMeans cm = new CMeans(Tokenizador.instancias, 3, 900);
+        CMeans cm = new CMeans(Tokenizador.instancias, 3, 1000);
         cm.clasifica();
-        Grafica grafica = new Grafica("Clasificación", "x1", "x2");
+        Grafica grafica = new Grafica("Clasificación", "sepal-length", "petal-width");
         
         Patron[] centroides = cm.getCentroides().get(0);
         for (int i = 0; i < centroides.length; i++) {
