@@ -212,9 +212,9 @@ public class CMeans {
     
     public static void main(String []args) {
         Tokenizador.leerDatos();
-        CMeans cm = new CMeans(Tokenizador.instancias, 3, 1000);
+        CMeans cm = new CMeans(Tokenizador.instancias, 3, 100);
         cm.clasifica();
-        Grafica grafica = new Grafica("Clasificación", "sepal-length", "petal-width");
+        Grafica grafica = new Grafica("Clasificación", "Battery power", "N Core");
         
         Patron[] centroides = cm.getCentroides().get(0);
         for (int i = 0; i < centroides.length; i++) {

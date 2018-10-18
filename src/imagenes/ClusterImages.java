@@ -23,7 +23,8 @@ public class ClusterImages {
         ArrayList<Patron> instancias = generarInstancias();
         Patron[] centroidesIniciales = 
                 calcularPixelesCentroidesIniciales(instancias, numClusters);
-        this.clasificador = new CMeans(instancias, numClusters);
+        //this.clasificador = new CMeans(instancias, numClusters);
+        this.clasificador = new CMeans(instancias, numClusters, 5000);
         this.clasificador.clasifica(centroidesIniciales);
         // Modificamos los colores con base a la clasificación
         for (Patron patron : instancias) {
@@ -69,6 +70,7 @@ public class ClusterImages {
 
     private Patron[] calcularPixelesCentroidesIniciales(ArrayList<Patron> instancias, int numClusters) {
         Random ran = new Random();
+        ArrayList<Color> coloresSeleccionados = new ArrayList<>();
         Color color;
         int pos;
         int sizeInstancias = instancias.size();
@@ -79,6 +81,13 @@ public class ClusterImages {
             color = new Color((int)instancias.get(pos).getCaracteristicas()[0],
                     (int)instancias.get(pos).getCaracteristicas()[1], 
             (int)instancias.get(pos).getCaracteristicas()[2]);
+            // Validar que se seleccione un color distinto
+            if(coloresSeleccionados.contains(color)) {
+                System.out.println("Color repetido!");
+                i--;
+                continue;
+            }
+            coloresSeleccionados.add(color);
             nombre = color.getRGB() + "";
             centroidesIniciales[i] = 
                     new Patron(instancias.get(pos).getCaracteristicas().clone(), nombre);
@@ -87,11 +96,13 @@ public class ClusterImages {
     }
     
     public static void main(String []args) {
+        int c = 5;
         Image imagenOriginal = tools.ImageManager.openImage();
         JFrameImagen fo = new JFrameImagen(imagenOriginal);
         fo.setVisible(true);
+        fo.setTitle("Número de clusters: " + c);
         ClusterImages ci = new ClusterImages();
-        Image imagenResultante = ci.calcularClusters(imagenOriginal, 3);
+        Image imagenResultante = ci.calcularClusters(imagenOriginal, c);
         JFrameImagen fr = new JFrameImagen(imagenResultante);
         fr.setVisible(true);
         System.out.println("");
