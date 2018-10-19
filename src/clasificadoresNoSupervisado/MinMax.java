@@ -1,5 +1,6 @@
 package clasificadoresNoSupervisado;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import objetos.Patron;
 import objetos.PatronRepresentativo;
@@ -36,8 +37,8 @@ public class MinMax {
         this.maxMin = 0;
     }
     
-    public void clasifica() {
-        obtenerPrimerosRepresentantes();
+    public void clasifica(boolean esParaImagen) {
+        obtenerPrimerosRepresentantes(esParaImagen);
         this.media = HerramientasClasificadores
             .calcularDistanciaEuclidiana(this.representativos.get(0),
                 this.representativos.get(1));
@@ -45,19 +46,24 @@ public class MinMax {
         //  maxMin < umbral * media aritmética
         do {
             int indexPatronMaxMin = obtenerIndexPatronMaxMin();
-            System.out.println("");
             if(this.maxMin < this.umbral*this.media) break;
             // Se agrega a los representantes el patrón MaxMin
             this.representativos.add(this.patrones.get(indexPatronMaxMin));
             // Se agrega su clase
             int ultimo = this.representativos.size() - 1;
-            this.representativos.get(ultimo).setClaseOriginal("class" + ultimo);
+            if(esParaImagen)
+                this.representativos.get(ultimo)
+                    .setClaseOriginal(obtenerClaseColor(
+                        this.representativos.get(ultimo).getCaracteristicas()));
+            else
+                this.representativos.get(ultimo).setClaseOriginal("class" + ultimo);
             // Se elimina de los patrones
             this.patrones.remove(indexPatronMaxMin);
         }while(true);
         // Se hace el etiquetado
         etiquetar();
     }
+    
     
     // En este método se calcula maxMin, y retorna el id del patrón que corresponde
     private int obtenerIndexPatronMaxMin() {
@@ -85,18 +91,28 @@ public class MinMax {
         return index;
     }
     
-    private void obtenerPrimerosRepresentantes() {
+    private void obtenerPrimerosRepresentantes(boolean esParaImagen) {
         // Para calcular los dos primeros representantes
         // 1) Se obtiene el representativo de todos
         Patron patronRepresentantivo = obtenerRepresentativo();
         // 2) Se busca el primer representante => el más alejado del representativo
         int indexPrimer = buscarMasAlejado(patronRepresentantivo);
         this.representativos.add(this.instancias.get(indexPrimer));
-        this.representativos.get(0).setClaseOriginal("class0");
+        if(esParaImagen)
+            this.representativos.get(0)
+                .setClaseOriginal(obtenerClaseColor(
+                   this.representativos.get(0).getCaracteristicas()));
+        else
+            this.representativos.get(0).setClaseOriginal("class0");
         // 3) Ahora se busca el segundo representante => el más alejado del primero
         int indexSegundo = buscarMasAlejado(this.instancias.get(indexPrimer));
         this.representativos.add(this.instancias.get(indexSegundo));
-        this.representativos.get(1).setClaseOriginal("class1");
+        if(esParaImagen)
+            this.representativos.get(1)
+                .setClaseOriginal(obtenerClaseColor(
+                   this.representativos.get(1).getCaracteristicas()));
+        else
+            this.representativos.get(1).setClaseOriginal("class1");
     }
     
     // Busca el patrón más alejado de A, considerando todas las instancias
@@ -144,6 +160,13 @@ public class MinMax {
         return aux;
     }
     
+    private String obtenerClaseColor(double[] caracteristicas) {
+        Color color = new Color((int)caracteristicas[0], (int)caracteristicas[1], 
+            (int)caracteristicas[2]);
+        String nombre = color.getRGB() + "";
+        return nombre;
+    }
+    
     private void etiquetar() {
         double distancia;
         int index;
@@ -172,9 +195,7 @@ public class MinMax {
     public ArrayList<Patron> getRepresentativos() {
         return representativos;
     }
-    
-    
-    
+
     public static void main(String []args) {
         // Instanciamos 4 patrones
 //        ArrayList<Patron> instancias = new ArrayList<>();
@@ -186,7 +207,7 @@ public class MinMax {
         Tokenizador.leerDatos();
         
         MinMax mm = new MinMax(Tokenizador.instancias, 0.5);
-        mm.clasifica();
+        mm.clasifica(false);
         
         Grafica grafica = new Grafica("Clasificación", "char_1", "char2");
         

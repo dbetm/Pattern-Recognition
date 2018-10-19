@@ -1,31 +1,27 @@
 package imagenes;
 
-import clasificadoresNoSupervisado.CMeans;
+import clasificadoresNoSupervisado.MinMax;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Random;
-import javax.swing.JFrame;
 import objetos.Patron;
 
 /**
  *
  * @author david
  */
-public class ClusterImages {
+public class ClusterMaxMin {
+    // Atributos
     private Image imagenOriginal;
-    private CMeans clasificador;
+    private MinMax clasificador;
     
-    public Image calcularClusters(Image imagen, int numClusters) {
+    public Image calcularClusters(Image imagen, double umbral) {
         this.imagenOriginal = imagen;
         // Extraer de la imagen la info para generar las instancias
         ArrayList<Patron> instancias = generarInstancias();
-        Patron[] centroidesIniciales = 
-                calcularPixelesCentroidesIniciales(instancias, numClusters);
-        //this.clasificador = new CMeans(instancias, numClusters);
-        this.clasificador = new CMeans(instancias, numClusters, 5000);
-        this.clasificador.clasifica(centroidesIniciales);
+        this.clasificador = new MinMax(instancias, 0.2);
+        this.clasificador.clasifica(true);
         // Modificamos los colores con base a la clasificación
         for (Patron patron : instancias) {
             PatronPixel aux = (PatronPixel)patron;
@@ -34,7 +30,6 @@ public class ClusterImages {
         return generarImagen(instancias);
     }
     
-
     private ArrayList<Patron> generarInstancias() {
         ArrayList<Patron> instancias = new ArrayList<>();
         // Se neceseitan leer los pixeles de la imagen, y no perder la referencia
@@ -54,7 +49,7 @@ public class ClusterImages {
         }
         return instancias;
     }
-
+    
     private Image generarImagen(ArrayList<Patron> instancias) {
         BufferedImage imgNueva = new BufferedImage(this.imagenOriginal
                 .getWidth(null), this.imagenOriginal.getHeight(null),
@@ -67,45 +62,16 @@ public class ClusterImages {
         return tools.ImageManager.toImage(imgNueva);
     }
     
-
-    private Patron[] calcularPixelesCentroidesIniciales(ArrayList<Patron> instancias, int numClusters) {
-        Random ran = new Random();
-        ArrayList<Color> coloresSeleccionados = new ArrayList<>();
-        Color color;
-        int pos;
-        int sizeInstancias = instancias.size();
-        String nombre;
-        Patron[] centroidesIniciales = new Patron[numClusters];
-        for (int i = 0; i < numClusters; i++) {
-            pos = ran.nextInt(sizeInstancias);
-            color = new Color((int)instancias.get(pos).getCaracteristicas()[0],
-                    (int)instancias.get(pos).getCaracteristicas()[1], 
-            (int)instancias.get(pos).getCaracteristicas()[2]);
-            // Validar que se seleccione un color distinto
-            if(coloresSeleccionados.contains(color)) {
-                System.out.println("Color repetido!");
-                i--;
-                continue;
-            }
-            coloresSeleccionados.add(color);
-            nombre = color.getRGB() + "";
-            centroidesIniciales[i] = 
-                    new Patron(instancias.get(pos).getCaracteristicas().clone(), nombre);
-        }
-        return centroidesIniciales;
-    }
-    
     public static void main(String []args) {
-        int c = 5;
+        double umbral = 0.5;
         Image imagenOriginal = tools.ImageManager.openImage();
         JFrameImagen fo = new JFrameImagen(imagenOriginal);
         fo.setVisible(true);
-        fo.setTitle("Número de clusters: " + c);
-        ClusterImages ci = new ClusterImages();
-        Image imagenResultante = ci.calcularClusters(imagenOriginal, c);
+        fo.setTitle("Umbral: " + umbral);
+        ClusterMaxMin cmm = new ClusterMaxMin();
+        Image imagenResultante = cmm.calcularClusters(imagenOriginal, umbral);
         JFrameImagen fr = new JFrameImagen(imagenResultante);
         fr.setVisible(true);
         System.out.println("");
     }
-    
 }
