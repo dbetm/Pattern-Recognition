@@ -4,7 +4,11 @@ import clasificadoresNoSupervisado.MinMax;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
 import objetos.Patron;
 
 /**
@@ -20,8 +24,9 @@ public class ClusterMaxMin {
         this.imagenOriginal = imagen;
         // Extraer de la imagen la info para generar las instancias
         ArrayList<Patron> instancias = generarInstancias();
-        this.clasificador = new MinMax(instancias, 0.2);
+        this.clasificador = new MinMax(instancias, umbral);
         this.clasificador.clasifica(true);
+        System.out.println("Hay " + this.clasificador.getNumClusters());
         // Modificamos los colores con base a la clasificación
         for (Patron patron : instancias) {
             PatronPixel aux = (PatronPixel)patron;
@@ -62,16 +67,19 @@ public class ClusterMaxMin {
         return tools.ImageManager.toImage(imgNueva);
     }
     
-    public static void main(String []args) {
-        double umbral = 0.5;
+    public static void main(String []args) throws IOException {
         Image imagenOriginal = tools.ImageManager.openImage();
-        JFrameImagen fo = new JFrameImagen(imagenOriginal);
-        fo.setVisible(true);
-        fo.setTitle("Umbral: " + umbral);
-        ClusterMaxMin cmm = new ClusterMaxMin();
-        Image imagenResultante = cmm.calcularClusters(imagenOriginal, umbral);
-        JFrameImagen fr = new JFrameImagen(imagenResultante);
-        fr.setVisible(true);
-        System.out.println("");
+        //JFrameImagen fo = new JFrameImagen(imagenOriginal);
+        for (double i = 0.1; i <= 1; i += 0.1) {
+            //fo.setVisible(true);
+            //fo.setTitle("Umbral: " + i);
+            ClusterMaxMin cmm = new ClusterMaxMin();
+            Image imagenResultante = cmm.calcularClusters(imagenOriginal, i);
+            //JFrameImagen fr = new JFrameImagen(imagenResultante);
+            //fr.setVisible(true);
+            File outputfile = new File("../../../../img_mm/upiiz/atardecer_" + i + ".png");
+            ImageIO.write(tools.ImageManager
+                .convertToBufferedImage(imagenResultante), "png", outputfile);
+        }  
     }
 }

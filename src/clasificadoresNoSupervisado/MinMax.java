@@ -195,6 +195,10 @@ public class MinMax {
     public ArrayList<Patron> getRepresentativos() {
         return representativos;
     }
+    
+    public int getNumClusters() {
+        return this.representativos.size();
+    }
 
     public static void main(String []args) {
         // Instanciamos 4 patrones
@@ -206,9 +210,9 @@ public class MinMax {
         
         Tokenizador.leerDatos();
         
-        MinMax mm = new MinMax(Tokenizador.instancias, 0.5);
+        MinMax mm = new MinMax(Tokenizador.instancias, 0.2);
         mm.clasifica(false);
-        
+        System.out.println(mm.getNumClusters());
         Grafica grafica = new Grafica("Clasificación", "char_1", "char2");
         
         ArrayList<Patron> representantes = mm.getRepresentativos();
