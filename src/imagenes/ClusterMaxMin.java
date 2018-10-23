@@ -4,7 +4,6 @@ import clasificadoresNoSupervisado.MinMax;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ public class ClusterMaxMin {
     // Atributos
     private Image imagenOriginal;
     private MinMax clasificador;
+    private int clasesEncontradas;
     
     public Image calcularClusters(Image imagen, double umbral) {
         this.imagenOriginal = imagen;
@@ -26,7 +26,8 @@ public class ClusterMaxMin {
         ArrayList<Patron> instancias = generarInstancias();
         this.clasificador = new MinMax(instancias, umbral);
         this.clasificador.clasifica(true);
-        System.out.println("Hay " + this.clasificador.getNumClusters());
+        this.clasesEncontradas = this.clasificador.getNumClusters();
+        System.out.println("Clases encontradas: " + this.clasesEncontradas);
         // Modificamos los colores con base a la clasificación
         for (Patron patron : instancias) {
             PatronPixel aux = (PatronPixel)patron;
@@ -66,8 +67,13 @@ public class ClusterMaxMin {
         }
         return tools.ImageManager.toImage(imgNueva);
     }
+
+    public int getClasesEncontradas() {
+        return clasesEncontradas;
+    }
     
     public static void main(String []args) throws IOException {
+        String index;
         Image imagenOriginal = tools.ImageManager.openImage();
         //JFrameImagen fo = new JFrameImagen(imagenOriginal);
         for (double i = 0.1; i <= 1; i += 0.1) {
@@ -77,9 +83,11 @@ public class ClusterMaxMin {
             Image imagenResultante = cmm.calcularClusters(imagenOriginal, i);
             //JFrameImagen fr = new JFrameImagen(imagenResultante);
             //fr.setVisible(true);
-            File outputfile = new File("../../../../img_mm/upiiz/atardecer_" + i + ".png");
+            index = String.valueOf(i);
+            File outputfile = new File("../../../../max_min_images/catrina/catrina_" 
+                + index + "_" + cmm.getClasesEncontradas() + ".png");
             ImageIO.write(tools.ImageManager
                 .convertToBufferedImage(imagenResultante), "png", outputfile);
-        }  
+        } 
     }
 }

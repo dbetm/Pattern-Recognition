@@ -3,7 +3,6 @@ package clasificadoresNoSupervisado;
 import java.awt.Color;
 import java.util.ArrayList;
 import objetos.Patron;
-import objetos.PatronRepresentativo;
 import tools.Grafica;
 import tools.HerramientasClasificadores;
 import tools.Punto;
@@ -42,6 +41,7 @@ public class MinMax {
         this.media = HerramientasClasificadores
             .calcularDistanciaEuclidiana(this.representativos.get(0),
                 this.representativos.get(1));
+        this.media /= 2;
         // Se va iterar mientras no se cumpla:
         //  maxMin < umbral * media aritmética
         do {
