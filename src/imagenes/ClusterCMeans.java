@@ -24,7 +24,7 @@ public class ClusterCMeans {
         Patron[] centroidesIniciales = 
                 calcularPixelesCentroidesIniciales(instancias, numClusters);
         //this.clasificador = new CMeans(instancias, numClusters);
-        this.clasificador = new CMeans(instancias, numClusters, 5000);
+        this.clasificador = new CMeans(instancias, numClusters, 50);
         this.clasificador.clasifica(centroidesIniciales);
         // Modificamos los colores con base a la clasificación
         for (Patron patron : instancias) {
@@ -95,7 +95,7 @@ public class ClusterCMeans {
     }
     
     public static void main(String []args) {
-        int c = 5;
+        int c = 220;
         Image imagenOriginal = tools.ImageManager.openImage();
         JFrameImagen fo = new JFrameImagen(imagenOriginal);
         fo.setVisible(true);

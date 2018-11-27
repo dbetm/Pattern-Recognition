@@ -141,7 +141,9 @@ public class MinimaDistancia implements clasificadorSupervisado {
         // Se hace la seleccion de características
         ArrayList<Patron> aux = GeneradorDeInstancias
             .genInstanciasPorCaracteristicas(new byte[]
-            {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0}
+            //{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0}
+            //{1, 1, 1, 1}
+            {1, 1, 0, 1, 0, 0, 0, 0, 0}
         );
         // Se entrena
         md.entrena(aux);

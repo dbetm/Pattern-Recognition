@@ -113,7 +113,7 @@ public class Knn implements clasificadorSupervisado {
     }
     
     public void clasificaConjunto(ArrayList<Patron> instancias) {
-        // Recorremos la colección a clasificación
+        // Recorremos la colección a clasificar
         int total = instancias.size();
         // Contador de clasificaciones correctos
         int aux = 0;
@@ -138,7 +138,9 @@ public class Knn implements clasificadorSupervisado {
         // Se hace la seleccion de características
         ArrayList<Patron> aux = GeneradorDeInstancias
             .genInstanciasPorCaracteristicas(new byte[]
-            {0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0}
+            //{1, 1, 1, 0, 0, 1, 1, 0, 1}
+            //{1, 1, 1, 1}s
+            {1, 1, 0, 1, 0, 0, 0, 0, 0}
         );
         // Se entrena el clasificador
         knn.entrena(aux);

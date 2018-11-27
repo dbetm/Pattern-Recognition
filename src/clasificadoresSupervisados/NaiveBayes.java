@@ -134,12 +134,18 @@ public class NaiveBayes implements clasificadorSupervisado {
     // Pruebas unitarias
     
     public static void main(String []args) {
-        /*Tokenizador.leerDatos();
+        Tokenizador.leerDatos();
         NaiveBayes nb = new NaiveBayes();
-        nb.entrena(Tokenizador.instancias);
-        Patron patron = new Patron(new double[]{6, 130, 8}, "desconocida");
-        nb.clasifica(patron);
-        System.out.println("La clase es: " + patron.getClaseResultante());*/
+        ArrayList<Patron> aux = GeneradorDeInstancias
+            .genInstanciasPorCaracteristicas(new byte[]
+            //{1, 1, 1, 0, 0, 1, 1, 0, 1}
+            //{1, 1, 1, 1}
+            {1, 1, 0, 1, 0, 0, 0, 0, 0}
+        );
+        nb.entrena(aux);
+        nb.clasificaConjunto(aux);
+        System.out.println("Eficacia: " + nb.getEficacia());
+        /*
         Map<Double, byte[]> eficacias = new HashMap<>();
         Tokenizador.leerDatos();
         for (int i = 0; i < 500; i++) {
@@ -168,6 +174,7 @@ public class NaiveBayes implements clasificadorSupervisado {
             mostrarComb(value);
             System.out.print(" Eficacia: " + key + "\n");
         }
+        */
     }
     
     

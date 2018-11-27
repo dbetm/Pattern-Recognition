@@ -76,7 +76,7 @@ public class ClusterMaxMin {
         String index;
         Image imagenOriginal = tools.ImageManager.openImage();
         //JFrameImagen fo = new JFrameImagen(imagenOriginal);
-        for (double i = 0.1; i <= 1; i += 0.1) {
+        for (double i = 1; i <= 1.3; i += 0.1) {
             //fo.setVisible(true);
             //fo.setTitle("Umbral: " + i);
             ClusterMaxMin cmm = new ClusterMaxMin();
@@ -84,7 +84,7 @@ public class ClusterMaxMin {
             //JFrameImagen fr = new JFrameImagen(imagenResultante);
             //fr.setVisible(true);
             index = String.valueOf(i);
-            File outputfile = new File("../../../../max_min_images/catrina/catrina_" 
+            File outputfile = new File("../../../../max_min_images/girasoles/girasoles_" 
                 + index + "_" + cmm.getClasesEncontradas() + ".png");
             ImageIO.write(tools.ImageManager
                 .convertToBufferedImage(imagenResultante), "png", outputfile);
