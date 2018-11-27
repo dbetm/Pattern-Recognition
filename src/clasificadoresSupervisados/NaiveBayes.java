@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import objetos.Patron;
 import tools.ClaseBayes;
+import tools.GeneradorDeInstancias;
 import tools.Tokenizador;
 
 /**
@@ -15,9 +17,11 @@ import tools.Tokenizador;
 public class NaiveBayes implements clasificadorSupervisado {
     private ArrayList<Patron> instancias;
     private Map<String, ClaseBayes> clases;
+    private double eficacia;
     
     public NaiveBayes() {
         this.clases = new HashMap<String, ClaseBayes>();
+        this.eficacia = 0;
     }
 
     @Override
@@ -75,7 +79,7 @@ public class NaiveBayes implements clasificadorSupervisado {
             x++;
             // se suma a la evidencia
             evidencia += producto;
-            System.out.println("evidencia: " + evidencia);
+            //System.out.println("evidencia: " + evidencia);
         }
             
         // Se calculan las probabilidades a posteriori
@@ -99,7 +103,6 @@ public class NaiveBayes implements clasificadorSupervisado {
         }
         // El argumento máx de las a posteriori define la clase a la que pertenece el patrón
         patron.setClaseResultante(claseResultante);
-        System.out.println("");
     }
     
     private double calcularDistribucionNormal(double c, double media, double varianza) {
@@ -108,15 +111,79 @@ public class NaiveBayes implements clasificadorSupervisado {
         return res;
     }
     
+    public void clasificaConjunto(ArrayList<Patron> instancias) {
+        // Recorremos la colección a clasificación
+        int total = instancias.size();
+        // Contador de clasificaciones correctos
+        int aux = 0;
+        for (Patron conejillo : instancias) {
+            clasifica(conejillo);
+            if(conejillo.getClaseResultante().equals(conejillo.getClaseOriginal())) {
+                aux++;
+            }
+        }
+        this.eficacia = (aux * 100) / total;
+    }
+
+    public double getEficacia() {
+        return eficacia;
+    }
+    
+    
+    
     // Pruebas unitarias
     
     public static void main(String []args) {
-        Tokenizador.leerDatos();
+        /*Tokenizador.leerDatos();
         NaiveBayes nb = new NaiveBayes();
         nb.entrena(Tokenizador.instancias);
         Patron patron = new Patron(new double[]{6, 130, 8}, "desconocida");
         nb.clasifica(patron);
-        System.out.println("La clase es: " + patron.getClaseResultante());
+        System.out.println("La clase es: " + patron.getClaseResultante());*/
+        Map<Double, byte[]> eficacias = new HashMap<>();
+        Tokenizador.leerDatos();
+        for (int i = 0; i < 500; i++) {
+            NaiveBayes nb = new NaiveBayes();
+            // Se hace la seleccion de características
+            byte[] selec = generarSeleccion(9);
+            ArrayList<Patron> aux = GeneradorDeInstancias
+                .genInstanciasPorCaracteristicas(selec);
+            // Entrenamos el clasificador
+            nb.entrena(aux);
+            // Se clasifica el mismo conjunto de entrenamiento
+            nb.clasificaConjunto(aux);
+            // Imprimimos la eficacia
+            if(nb.getEficacia() > 0.0) {
+                //mostrarComb(selec);
+                //System.out.print(" Eficacia: " + nb.getEficacia() + "\n");
+                if(!eficacias.containsKey(nb.getEficacia())) {
+                    eficacias.put(nb.getEficacia(), selec);
+                }
+            }
+        }
+        
+        for (Entry<Double, byte[]> entry : eficacias.entrySet()) {
+            Double key = entry.getKey();
+            byte[] value = entry.getValue();
+            mostrarComb(value);
+            System.out.print(" Eficacia: " + key + "\n");
+        }
     }
     
+    
+    public static byte[] generarSeleccion(int n) {
+        byte s[] = new byte[n]; 
+        Random r = new Random();
+        for (int i = 0; i < n; i++) {
+            s[i] = (byte) r.nextInt(2);
+            //System.out.print(s[i] + " ");
+        }
+        return s;
+    }
+    
+    public static void mostrarComb(byte[] aux) {
+       for (int i = 0; i < aux.length; i++) {
+            System.out.print(aux[i] + " ");
+        } 
+    }
 }
