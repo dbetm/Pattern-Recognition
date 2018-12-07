@@ -8,7 +8,7 @@ import tools.NNs;
  *
  * @author david
  */
-public class Perceptron implements RedNeuronal{
+public class Perceptron implements RedNeuronal {
     private ArrayList<Patron> patrones; // Con estos patrones va a entrenar
     private double bias;                // Factor de convergencia
     private double alfa;                // Factor de aprendizaje
@@ -29,6 +29,7 @@ public class Perceptron implements RedNeuronal{
         int y; // Salida
         int t; // Clase esperada
         int correctos = 0;
+        int epocas = 0;
         int it = patrones.size() + 1;
         while(correctos < it) {
             for (int i = 0; i < this.patrones.size(); i++) {
@@ -48,7 +49,9 @@ public class Perceptron implements RedNeuronal{
                 else correctos++;
                 //System.out.println("correctos: " + correctos);
             }
+            epocas++;
         }
+        System.out.println(alfa + " " + epocas);
     }
     
     @Override
@@ -121,9 +124,10 @@ public class Perceptron implements RedNeuronal{
         setOR.add(p3);
         setOR.add(p4);
         // Se entrena con un factor de aprendizaje de 0.2
-        perceptron.entrenarConReglaDelta(setOR, 0.5);
+        perceptron.entrenarConReglaDelta(setOR, 0.9);
         // Ahora ya debe ser capaz de resolver el OR
         perceptron.clasificaConjunto(setOR);
+
         
         System.out.println("\nAND");
         // ### Ahora se entrena para el AND
@@ -136,10 +140,13 @@ public class Perceptron implements RedNeuronal{
         setAND.add(pb);
         setAND.add(pc);
         setAND.add(pd);
-        perceptron.entrenarConReglaDelta(setAND, 0.1);
-        // Ahora ya debe ser capaz de resolver el OR
+        perceptron.entrenarConReglaDelta(setAND, 0.9);
+        // Ahora ya debe ser capaz de resolver el AND
         perceptron.clasificaConjunto(setAND);
-        
+        //for (int i = 1; i < 10; i++) {
+          //  perceptron.entrenar(setAND, i * 0.1);
+        //}
+        /*
         System.out.println("\nX");
         // ### Ahora se entrena para el AND
         Patron pw = new Patron(new double[]{0, 0}, "0");
@@ -154,5 +161,6 @@ public class Perceptron implements RedNeuronal{
         perceptron.entrenarConReglaDelta(setX, 0.3);
         // Ahora ya debe ser capaz de resolver el OR
         perceptron.clasificaConjunto(setX);
+        */
     }
 }

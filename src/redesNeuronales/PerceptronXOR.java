@@ -99,8 +99,8 @@ public class PerceptronXOR implements RedNeuronal {
                 this.bias += this.alfa * e * (-1);
             }
             //System.out.println("Epoca: " + epoca++);
-            System.out.println("Error anterior: " + errorAnterior + 
-                " Error actual: " + error);
+            //System.out.println("Error anterior: " + errorAnterior + 
+            //    " Error actual: " + error);
         } while(Math.abs(errorAnterior - error) > 0.0001);
     }
     
@@ -164,6 +164,10 @@ public class PerceptronXOR implements RedNeuronal {
         setXOR.add(p2);
         setXOR.add(p3);
         setXOR.add(p4);
+        pxor.entrenarConReglaDelta(setXOR, 0.8);
+        // Ahora ya debe ser capaz de resolver el XOR
+        pxor.clasificaConjunto(setXOR);
+        /*
         // Se entrena con un factor de aprendizaje de 0.2
         for (int i = 0; i < 10; i++) {
             pxor.entrenarConReglaDelta(setXOR, 0.2);
@@ -171,5 +175,6 @@ public class PerceptronXOR implements RedNeuronal {
             pxor.clasificaConjunto(setXOR);
             System.out.println("\n");
         }
+        */
     }
 }
